@@ -62,9 +62,9 @@ def chat_id_from_env(name: str) -> int | str:
 
 
 REQUIRED_CHANNELS = (
-    (chat_id_from_env("CHANNEL_1_ID"), required("CHANNEL_1_URL"), "Channel 1"),
-    (chat_id_from_env("CHANNEL_2_ID"), required("CHANNEL_2_URL"), "Channel 2"),
-    (chat_id_from_env("CHANNEL_3_ID"), required("CHANNEL_3_URL"), "Channel 3"),
+    (chat_id_from_env("1004292386992"), required("https://t.me/botinfo568"), "Channel 1"),
+    (chat_id_from_env("1004392129253"), required("https://t.me/botinfo56"), "Channel 2"),
+    (chat_id_from_env("1004385442039"), required("https://t.me/botinfo12"), "Channel 3"),
 )
 PENDING_JOIN_REQUESTS: dict[int | str, set[int]] = {}
 PENDING_LOOKUPS: dict[int, str] = {}
@@ -95,9 +95,9 @@ PREMIUM_STANDARD_LOOKUP_SETTINGS = frozenset(
 
 app = Client(
     "osint_bot",
-    api_id=int(required("API_ID")),
-    api_hash=required("API_HASH"),
-    bot_token=required("BOT_TOKEN"),
+    api_id=int(required("30583538")),
+    api_hash=required("5801a6ef1575eae149d2cd8a1d01ee23"),
+    bot_token=required("AAGhggIzqjAGEanfWTMDWiZ9pHsGJcL1OvE"),
 )
 
 WELCOME_TEXT = (
