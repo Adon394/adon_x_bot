@@ -62,7 +62,7 @@ def chat_id_from_env(name: str) -> int | str:
 
 
 REQUIRED_CHANNELS = (
-    (chat_id_from_env("1004292386992"), required("https://t.me/botinfo568"), "Channel 1"),
+    (chat_id_from_env("1004431771010"), required("https://t.me/adonbot48"), "Channel 1"),
     (chat_id_from_env("1004392129253"), required("https://t.me/botinfo56"), "Channel 2"),
     (chat_id_from_env("1004385442039"), required("https://t.me/botinfo12"), "Channel 3"),
 )
