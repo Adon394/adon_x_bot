@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import asyncio
-import copy
+import asyncio                                                                                                                                            import copy
 import html
 import io
 import json
@@ -62,9 +61,9 @@ def chat_id_from_env(name: str) -> int | str:
 
 
 REQUIRED_CHANNELS = (
-    (chat_id_from_env("1004431771010"), required("https://t.me/adonbot48"), "Channel 1"),
-    (chat_id_from_env("1004392129253"), required("https://t.me/botinfo56"), "Channel 2"),
-    (chat_id_from_env("1004385442039"), required("https://t.me/botinfo12"), "Channel 3"),
+   (chat_id_from_env("CHANNEL_1_ID"), required("CHANNEL_1_LINK"), "Channel 1"),
+(chat_id_from_env("CHANNEL_2_ID"), required("CHANNEL_2_LINK"), "Channel 2"),
+    (chat_id_from_env("CHANNEL_3_ID"), required("CHANNEL_3_LINK"), "Channel 3"),
 )
 PENDING_JOIN_REQUESTS: dict[int | str, set[int]] = {}
 PENDING_LOOKUPS: dict[int, str] = {}
@@ -80,7 +79,7 @@ def admin_user_ids() -> frozenset[int]:
             continue
         if raw_id.isdigit():
             ids.add(int(raw_id))
-        else:
+            else:
             LOGGER.warning("Ignoring invalid ADMIN_USER_ID value")
     return frozenset(ids)
 
@@ -95,9 +94,9 @@ PREMIUM_STANDARD_LOOKUP_SETTINGS = frozenset(
 
 app = Client(
     "osint_bot",
-    api_id=int(required("30583538")),
-    api_hash=required("5801a6ef1575eae149d2cd8a1d01ee23"),
-    bot_token=required("AAGhggIzqjAGEanfWTMDWiZ9pHsGJcL1OvE"),
+    api_id=int(required("API_ID")),
+    api_hash=required("API_HASH"),
+    bot_token=required("BOT_TOKEN"),
 )
 
 WELCOME_TEXT = (
@@ -142,8 +141,7 @@ def join_keyboard(missing_channels: tuple[tuple[int | str, str, str], ...]) -> I
     return InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(name, url=url, style=ButtonStyle.PRIMARY)]
-            for _, url, name in missing_channels
-        ]
+            for _, url, name in missing_channels                                                                                                                  ]
         + [[
             InlineKeyboardButton(
                 "✅ Joined",
@@ -162,11 +160,7 @@ def start_menu_keyboard() -> InlineKeyboardMarkup:
         ("ADV_NUM_TO_INFO", "🔎 Adv. Number Info", "lookup_advanced_number"),
         ("PAN_TO_INFO", "🪪 PAN to Info", "lookup_pan"),
         ("AADHAR_TO_FAMILY", "👨‍👩‍👧 Aadhaar Family", "lookup_aadhar_family"),
-        ("IFSC_TO_INFO", "🏦 IFSC to Info", "lookup_ifsc"),
-        ("TG_TO_INFO", "👤 TG to Info", "lookup_tg_info"),
-        ("VEHICLE_TO_INFO", "🚗 Vehicle to Info", "lookup_vehicle_info"),
-        ("VEHICLE_TO_NUMBER", "📱 Vehicle to Number", "lookup_vehicle_number"),
-    )
+        )
     buttons = [
         InlineKeyboardButton(label, callback_data=callback, style=ButtonStyle.PRIMARY)
         for setting, label, callback in lookup_options
@@ -237,17 +231,14 @@ async def process_join_request(_: Client, request: ChatJoinRequest) -> None:
     """Record pending access only for invite links that require approval."""
     invite_link = request.invite_link
     if not invite_link or not invite_link.creates_join_request:
-        return
-
+        return                                                                                                                                            
     for chat_id, _, _ in REQUIRED_CHANNELS:
         if request.chat.id == chat_id:
             PENDING_JOIN_REQUESTS.setdefault(chat_id, set()).add(request.from_user.id)
             await asyncio.to_thread(osint_bot.record_pending_join_request, chat_id, request.from_user.id)
             LOGGER.info("Granted bot access for pending request from user %s in chat %s", request.from_user.id, chat_id)
             return
-
-
-async def welcome_text(user_id: int) -> str:
+            async def welcome_text(user_id: int) -> str:
     """Build the welcome message, including premium expiry when applicable."""
     credits = await asyncio.to_thread(
         osint_bot.get_credits, user_id
@@ -407,7 +398,7 @@ def looks_like_result(value: Any) -> bool:
     if not isinstance(value, dict):
         return False
     keys = {normalized_key(key) for key in value}
-    result_keys = {
+result_keys = {
         normalized_key(alias)
         for aliases in RESULT_ALIASES.values()
         for alias in aliases
@@ -487,7 +478,6 @@ def normalise_phone_number(value: str) -> str | None:
     if len(digits) == 12 and digits.startswith("91"):
         digits = digits[2:]
     return digits if len(digits) == 10 else None
-
 
 def normalise_vehicle_number(value: str) -> str | None:
     """Normalise a vehicle registration number such as GJ23CH0081."""
@@ -641,8 +631,8 @@ async def lookup_number(message: Message, number: str) -> None:
         return
 
     has_credit = await asyncio.to_thread(osint_bot.consume_credit, message.from_user.id)
-    if not has_credit:
-        await message.reply_text(f"<b><i>Contact the admin to buy credits and premium to your account before using this command.\n\n Admin Contact: @{OWNER_USERNAME}</b></i>")
+if not has_credit:
+        await message.reply_text(f"<b><i>Contact the admin to buy credits and premium to your account before using this command.\n\n Admin Contact: @{OWN>
         return
 
     loading_message = await message.reply_text("Fetching the number information…")
@@ -700,7 +690,7 @@ async def lookup_aadhar(message: Message, aadhar: str) -> None:
 
     has_credit = await asyncio.to_thread(osint_bot.consume_credit, message.from_user.id)
     if not has_credit:
-        await message.reply_text(f"<b><i>Contact the admin to buy credits and premium to your account before using this command.\n\n Admin Contact: @{OWNER_USERNAME}</b></i>")
+        await message.reply_text(f"<b><i>Contact the admin to buy credits and premium to your account before using this command.\n\n Admin Contact: @{OWN>
         return
 
     loading_message = await message.reply_text("Fetching the Aadhaar information…")
@@ -722,7 +712,7 @@ async def lookup_aadhar(message: Message, aadhar: str) -> None:
         return
     except (httpx.HTTPError, ValueError, KeyError, json.JSONDecodeError) as error:
         LOGGER.warning("Aadhaar lookup failed: %s", type(error).__name__)
-        await remove_loading_message(loading_message)
+await remove_loading_message(loading_message)
         await message.reply_text("Lookup failed. Please try again later.")
         return
 
@@ -804,7 +794,7 @@ async def lookup_standard_api(message: Message, value: str, *, setting: str,
         await message.reply_text("No data found.")
         return
     for chunk in chunks:
-        await message.reply_text(chunk)
+    await message.reply_text(chunk)
 
 
 async def fetch_vehicle_data(message: Message, vehicle: str, setting: str) -> Any | None:
@@ -966,7 +956,7 @@ async def lookup_keyboard_input(_: Client, message: Message) -> None:
     if selected_tool == "advanced_number":
         number = normalise_phone_number(message.text)
         if not number:
-            await message.reply_text("Please send a valid 10-digit mobile number.")
+   await message.reply_text("Please send a valid 10-digit mobile number.")
             return
         PENDING_LOOKUPS.pop(user_id, None)
         await lookup_standard_api(message, number, setting="ADV_NUM_TO_INFO", placeholder="NUMBER", parameter="number", title="Advanced Number Info")
@@ -1129,8 +1119,7 @@ async def broadcast_command(_: Client, message: Message) -> None:
     if not message.from_user or message.from_user.id not in ADMIN_USER_IDS:
         await message.reply_text("You are not authorized to use this command.")
         return
-
-    reply = message.reply_to_message
+        reply = message.reply_to_message
     text = ""
     entities = None
     if not reply:
@@ -1208,8 +1197,7 @@ async def premium_command(_: Client, message: Message) -> None:
     if expires_at <= datetime.now(timezone.utc):
         await message.reply_text("The premium expiry date must be in the future.")
         return
-
-    user_id = int(parts[1])
+        user_id = int(parts[1])
     await asyncio.to_thread(osint_bot.set_premium, user_id, expires_at)
     await message.reply_text(
         f"Premium enabled for <code>{user_id}</code> until <b>{expiry_date:%d-%m-%Y}</b>."
@@ -1289,7 +1277,7 @@ async def choose_lookup(_: Client, callback_query: CallbackQuery) -> None:
     if selected_tool in {
         "advanced_number", "pan", "aadhar_family", "ifsc", "tg_info",
         "vehicle_info", "vehicle_number",
-    } and not await asyncio.to_thread(osint_bot.is_premium, user.id):
+        } and not await asyncio.to_thread(osint_bot.is_premium, user.id):
         await callback_query.answer(
             PREMIUM_REQUIRED_ALERT, show_alert=True
         )
@@ -1370,5 +1358,9 @@ if __name__ == "__main__":
             use_reloader=False,
         ),
         daemon=True,
-    ).start()
+        ).start()
     app.run()
+        
+        
+        
+        
