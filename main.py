@@ -1394,3 +1394,28 @@ if __name__ == "__main__":
         daemon=True,
     ).start()
     app.run()
+    import os
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+# Define command functions
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Welcome! How can I help you today?")
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Here are the available commands:\n/start - Begin\n/help - Show this message")
+
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("I am a Telegram bot running on Python!")
+
+if __name__ == '__main__':
+    TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    # Add Command Handlers
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("info", info))
+
+    print("Bot is running...")
+    app.run_polling()
